@@ -21,12 +21,12 @@ import net.google.safebrowsing2.db.Storage
 import util.LiteDataSource
 
 class Safebrowsing2Config extends ServerConfig[Safebrowsing2ServiceServer] {
-  
+
   /**
-   * The HTTP Port to run the service on 
+   * The HTTP Port to run the service on
    */
   var port: Int = 8080
-  
+
   /**
    * The Google Safe Browsing API Key to use
    */
@@ -36,37 +36,39 @@ class Safebrowsing2Config extends ServerConfig[Safebrowsing2ServiceServer] {
    * Set useMac to true to request MAC signatures on all data
    */
   var useMac = false
-  
+
   /**
    * Optional list of blacklist names to update
    */
   var lists = optional[Array[String]]
-  
+
   /**
    * The update period
    */
   var udpatePeriod: Duration = 1.minute
-  
+
   var name: String = "Safebrowsing2Service"
-    
+
   /**
    * Supported databases are HSQLDB, MySQL and MS SQL
    */
   var databaseUrl = "jdbc:hsqldb:mem:safebrowsing2"
   var databaseUsername = "sa"
   var databasePassword = ""
-    
+
   /**
    * The table prefix to use for the database tables
    */
   var databaseTablePrefix = "gsb2_"
-    
+
+  var provider = "google"
+
   lazy val storage: Storage = getStorage
-    
+
   var threadPoolCoreSize = 0
   var threadPoolMaxSize = 1000
   var threadKeepAliveTime = 30L
-  
+
   lazy val futurePool: FuturePool = getFuturePool
 
   var runtime: RuntimeEnvironment = null
@@ -80,7 +82,7 @@ class Safebrowsing2Config extends ServerConfig[Safebrowsing2ServiceServer] {
 
     FuturePool(executor)
   }
-  
+
   def getStorage = {
     val protocol = databaseUrl.split(":").drop(1).head
     protocol match {
@@ -104,11 +106,11 @@ class Safebrowsing2Config extends ServerConfig[Safebrowsing2ServiceServer] {
 
     runtime = _runtime
 
-    val updateService = new Safebrowsing2UpdateService(apikey, storage, useMac, lists, udpatePeriod)
+    val updateService = new Safebrowsing2UpdateService(apikey, storage, provider, useMac, lists, udpatePeriod)
     updateService.start()
 
     ServiceTracker.register(updateService)
-    
+
     new Safebrowsing2ServiceServer(this)
   }
 }

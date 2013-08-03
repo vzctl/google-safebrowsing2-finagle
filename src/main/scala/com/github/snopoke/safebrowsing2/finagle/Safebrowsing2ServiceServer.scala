@@ -14,7 +14,7 @@ class Safebrowsing2ServiceServer(config: Safebrowsing2Config) extends OstrichSer
   override val name = config.name
   override val futurePool = config.futurePool
   override val useMac = config.useMac
-  override val sb2 = new SafeBrowsing2(config.apikey, config.storage)
+  override val sb2 = new SafeBrowsing2(config.apikey, config.storage, config.provider)
 
   override def start() {
     log.info("Starting server %s on port %d", name, port)

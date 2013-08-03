@@ -9,6 +9,7 @@ import com.twitter.logging.Level
 
 class Safebrowsing2UpdateService(apikey: String,
   storage: Storage,
+  provider: String,
   useMac: Boolean,
   lists: Option[Array[String]],
   period: Duration) extends PeriodicBackgroundProcess("SafeBrowsing2 Update Process", period, false) {
@@ -16,7 +17,7 @@ class Safebrowsing2UpdateService(apikey: String,
   private val log = Logger.get(getClass.getName)
   private val statsLog = Logger.get("dbstats")
 
-  private val sb2 = new SafeBrowsing2(apikey, storage)
+  private val sb2 = new SafeBrowsing2(apikey, storage, provider)
 
   override def periodic = {
     try {
